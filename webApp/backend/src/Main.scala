@@ -1,36 +1,32 @@
-import scalatags.Text.all._
+import scalatags.Text.all.*
 
-object Main extends cask.MainRoutes {
+object Main extends cask.MainRoutes:
 
   @cask.get("/")
   def hello() = cask.Response(
     headers = Seq(
       "Content-Type" -> "text/html",
-      "Server" -> "cask"
+      "Server" -> "cask",
     ),
     data = doctype("html")(
       html(
         lang := "en",
         head(
           tag("title")("Hello from ScalaJS"),
-          script(src := "/files/webApp/frontend/fastOpt/dest/out.js")
+          script(src := "/files/main.js"),
         ),
         body(
           h1("Hello :)"),
-          button(onclick := "clickAction()")("click me")
-        )
-      )
-    )
+          button(onclick := "clickAction()")("click me"),
+        ),
+      ),
+    ),
   )
 
   @cask.staticFiles("/files/")
   def staticFiles() =
-    "out/" // serve files from ./out/ in the root of the project
-
-  @cask.staticResources(
-    "/static/"
-  ) // unused, just documented as it was not very clear in docs
-  def staticResources() = "." // serve files from resouces in this module
+    // serve files from ./out/webApp/frontend/fastLinkJS.dest/
+    // in the root of the project
+    "out/webApp/frontend/fastLinkJS.dest/"
 
   initialize()
-}

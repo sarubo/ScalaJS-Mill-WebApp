@@ -1,40 +1,31 @@
 import mill._
-import mill.api.Loose
-import mill.define.Target
 import mill.scalajslib.ScalaJSModule
 import mill.scalalib._
-import mill.scalalib.api.CompilationResult
 
-val projectScalaVersion = "3.0.0-RC2"
+val projectScalaVersion = "3.3.1"
+val projectScalacOptions = Seq("-encoding", "utf-8", "-deprecation", "-feature")
 
-//noinspection ScalaFileName
 object webApp extends JavaModule {
 
   object frontend extends ScalaJSModule {
-
-    override def scalaVersion = projectScalaVersion
-    override def scalaJSVersion = "1.5.1"
-
-    override def ivyDeps: Target[Loose.Agg[Dep]] = super.ivyDeps() ++ Agg(
-      ivy"org.scala-js::scalajs-dom::1.1.0".withDottyCompat(projectScalaVersion)
+    def scalaVersion = projectScalaVersion
+    def scalaJSVersion = "1.15.0"
+    def scalacOptions = projectScalacOptions
+    def ivyDeps = Agg(
+      ivy"org.scala-js::scalajs-dom::2.8.0",
     )
-
   }
 
   object backend extends ScalaModule {
-
-    override def scalaVersion = projectScalaVersion
-
-    override def ivyDeps: Target[Loose.Agg[Dep]] = super.ivyDeps() ++ Agg(
-      ivy"com.lihaoyi::cask:0.7.9",
-      ivy"com.lihaoyi::scalatags:0.9.4".withDottyCompat(projectScalaVersion)
+    def scalaVersion = projectScalaVersion
+    def scalacOptions = projectScalacOptions
+    def ivyDeps = Agg(
+      ivy"com.lihaoyi::cask:0.9.2",
+      ivy"com.lihaoyi::scalatags:0.12.0",
     )
-
-    override def compile: T[CompilationResult] = T {
-      frontend.fastOpt.apply()
-      super.compile.apply()
+    def compile = T {
+      frontend.fastLinkJS()
+      super.compile()
     }
-
   }
-
 }
